@@ -44,7 +44,10 @@ This line data is ingredients for making _paragraph_ dataset. _(see step **D)**)
 
 ```
 > cd generate_data
-> python run.py -i texts/my-corpus.txt -l ko -nd -c 10000 -f 200 -rs -w 20 -t 1 -bl 2 -rbl -k 1 -rk -na 2 --output_dir out/line
+> python run.py -i texts/my-corpus.txt \
+    -l ko -nd -c 10000 -f 200 \
+    -rs -w 20 -t 1 -bl 2 -rbl -k 1 -rk -na 2 \
+    --output_dir out/line
 ```
 
 - `-i` : input corpus
@@ -75,7 +78,8 @@ To train text recognition model, we will generate word data by cropping paragrap
 
 ```
 > cd generate_data
-> python crop_words.py --pickle out/lines/combined/merged_gt.pkl --image_dir out/lines/combined --output_dir out/words
+> python crop_words.py --pickle out/lines/combined/merged_gt.pkl \
+    --image_dir out/lines/combined --output_dir out/words
 ```
 
 Then you can get word-level-splited cropped data. The total data would be located in `out/words/gt.pkl` with command above.
@@ -89,7 +93,10 @@ _Okay. We finished preparing dataset for training._
 There are several hyper-parameters of text detection model in `settings/default.yaml`. I don't recommend you to edit them without knowledge of specific element.
 
 ```
-> python train.py -m detector --data_path generate_data/out/line/combined/merged_gt.pkl --version 0 --batch_size 4 --learning_rate 5e-5 --max_epoch 100 --num_workers 4
+> python train.py -m detector \
+    --data_path generate_data/out/line/combined/merged_gt.pkl \
+    --version 0 --batch_size 4 --learning_rate 5e-5 \
+    --max_epoch 100 --num_workers 4
 ```
 
 To monitor the training progress, use tensorboard.
@@ -112,7 +119,8 @@ Text Recognizer also has some hyper-parameters. Thanks to [deep-text-recognition
 `Prediction`: select Prediction module [CTC | Attn].  
 
 ```
-> python train.py -m recognizer --data_path generate_data/out/words/gt.pkl --version 1 --batch_size 64 --learning_rate 1.0 --max_epoch 100 --num_workers 4
+> python train.py -m recognizer --data_path generate_data/out/words/gt.pkl \
+    --version 1 --batch_size 64 --learning_rate 1.0 --max_epoch 100 --num_workers 4
 ```
 
 You need to train the model more than 15k `total iteration`.  
@@ -145,7 +153,10 @@ craft:
 Then, start API server with `demo.py`. Specify each checkpoints you trained with parameters.
 
 ```
-python demo.py --host 127.0.0.1 --port 5000 --detector_ckpt <detector checkpoint path> --recognizer_ckpt <recognizer checkpoint path> --vocab vocab.txt
+> python demo.py --host 127.0.0.1 --port 5000 \ 
+    --detector_ckpt <detector checkpoint path> \
+    --recognizer_ckpt <recognizer checkpoint path> \
+    --vocab vocab.txt
 ```
 
 Then your OCR-Engine server has been started. 
@@ -153,7 +164,7 @@ Then your OCR-Engine server has been started.
 You can send API request by using `request.py`.
 
 ```
-python request.py <img path>
+> python request.py <img path>
 ```
 
 Then you will get text and coordinate by response.
